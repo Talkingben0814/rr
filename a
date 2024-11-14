@@ -1,0 +1,592 @@
+local client_id = "config"
+local Players = game:GetService('Players')
+local Terrain = Workspace:FindFirstChild('Terrain')
+local Lighting = game:GetService("Lighting")
+local Workspace = game:GetService('Workspace')
+local replicatedStorage = game:GetService("ReplicatedStorage")
+local mainEvent = replicatedStorage:WaitForChild("MainEvent")
+local localPlayer = Players.LocalPlayer
+local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
+local ws = WebSocket.connect("ws://192.168.1.71:8080")
+
+
+Terrain.WaterWaveSize = 0
+Terrain.WaterWaveSpeed = 0
+Terrain.WaterReflectance = 0
+Terrain.WaterTransparency = 0
+Lighting.GlobalShadows = false
+Lighting.FogEnd = 9e9
+Lighting.Brightness = 0
+
+for _, v in ipairs(game:GetDescendants()) do
+    if v:IsA("Part") or v:IsA("Union") or v:IsA("CornerWedgePart") or v:IsA("TrussPart") then
+        v.Material = "Plastic"
+        v.Reflectance = 0
+    elseif v:IsA("Decal") or v:IsA("Texture") and v.Parent.Name ~= "Spill" then
+        v.Parent = game:GetService('Workspace').Terrain
+        v:remove()
+    elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+        v.Parent = game:GetService('Workspace').Terrain
+        v:remove()
+    elseif v:IsA("Explosion") then
+        v.Parent = game:GetService('Workspace').Terrain
+        v:remove()
+    elseif v:IsA("Fire") or v:IsA("SpotLight") or v:IsA("Smoke") then
+        v.Parent = game:GetService('Workspace').Terrain
+        v:remove()
+    elseif v:IsA("MeshPart") then
+        v.Material = "Plastic"
+        v.Reflectance = 0
+        v.TextureID = 0
+        v.MeshId = 'rbxassetid://0'
+    elseif v:IsA('Model') then
+        sethiddenproperty(v, "LevelOfDetail", "Automatic")
+    end
+end
+
+local decalsyeeted = true
+local g = game
+local w = g.Workspace
+local l = g.Lighting
+local t = w.Terrain
+t.WaterWaveSize = 0
+t.WaterWaveSpeed = 0
+t.WaterReflectance = 0
+t.WaterTransparency = 0
+l.GlobalShadows = false
+l.FogEnd = 9e9
+l.Brightness = 0
+settings().Rendering.QualityLevel = "Level01"
+for i, v in ipairs(g:GetDescendants()) do
+    if v:IsA("Part") or v:IsA("Union") or v:IsA("CornerWedgePart") or v:IsA("TrussPart") then
+        v.Material = "Plastic"
+        v.Reflectance = 0
+    elseif v:IsA("Decal") or v:IsA("Texture") and decalsyeeted then
+        v.Transparency = 1
+    elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+        v.Lifetime = NumberRange.new(0)
+    elseif v:IsA("Explosion") then
+        v.BlastPressure = 1
+        v.BlastRadius = 1
+    elseif v:IsA("Fire") or v:IsA("SpotLight") or v:IsA("Smoke") then
+        v.Enabled = false
+    elseif v:IsA("MeshPart") then
+        v.Material = "Plastic"
+        v.Reflectance = 0
+        v.TextureID = 10385902758728957
+    end
+end
+for i, e in ipairs(l:GetChildren()) do
+    if e:IsA("BlurEffect") or e:IsA("SunRaysEffect") or e:IsA("ColorCorrectionEffect") or e:IsA("BloomEffect") or e:IsA("DepthOfFieldEffect") then
+        e:remove()
+    else
+        e:remove()
+    end
+end
+for _,v in ipairs(game:GetService("Workspace"):GetDescendants()) do
+    if v:IsA('Seat') or string.lower(v.Name):match('seat') then v:remove() end -- removes all seating in the game (prevents bugs)
+end
+local function makeEverythingInvisible()
+    -- Get all parts in the workspace
+    local allParts = game.Workspace:GetDescendants()
+
+    -- Iterate through all parts and make them invisible
+    for _, part in ipairs(allParts) do
+        if part:IsA("BasePart") then
+            part.Transparency = 1
+        end
+    end
+end
+
+makeEverythingInvisible()
+
+local teleportPositions = {
+    { -393.01, 15, -338 },
+    { -381.01, 15, -338 },
+    { -369.01, 15, -338 },
+    { -357.01, 15, -338 },
+    { -393.01, 15, -325 },
+    { -381.01, 15, -325 },
+    { -369.01, 15, -325 },
+    { -357.01, 15, -325 },
+    { -393.01, 15, -312 },
+    { -381.01, 15, -312 },
+    { -369.01, 15, -312 },
+    { -357.01, 15, -312 },
+    { -393.01, 15, -299 },
+    { -381.01, 15, -299 },
+    { -369.01, 15, -299 },
+    { -357.01, 15, -299 },
+    { -393.01, 15, -286 },
+    { -381.01, 15, -286 },
+    { -369.01, 15, -286 },
+    { -357.01, 15, -286 },
+    { -393.01, 15, -273 },
+    { -381.01, 15, -273 },
+    { -369.01, 15, -273 },
+    { -357.01, 15, -273 },
+    { -393.01, 15, -260 },
+    { -381.01, 15, -260 },
+    { -369.01, 15, -260 },
+    { -357.01, 15, -260 },
+    { -393.01, 15, -247 },
+    { -381.01, 15, -247 },
+    { -369.01, 15, -247 },
+    { -357.01, 15, -247 },
+    { -393.01, 15, -233 },
+    { -381.01, 15, -233 },
+    { -369.01, 15, -233 },
+    { -357.01, 15, -233 },
+    { -405.01, 15, -299 },
+    { -405.01, 15, -286 },
+    { -405.01, 15, -273 },
+}
+
+function getAltNumber(userId)
+    local alts = getgenv().alts
+    for i, id in ipairs(alts) do
+        if userId == id then
+            return i
+        end
+    end
+    return false
+end
+ 
+local function teleport(position)
+    local position = CFrame.new(position[1], position[2], position[3])
+    task.spawn(function()
+        while task.wait() do
+            pcall(function()
+                localPlayer.Character:WaitForChild("HumanoidRootPart").CFrame = position
+                localPlayer.Character:WaitForChild("HumanoidRootPart").Velocity = Vector3.new(0, 0, 0)
+            end)
+        end
+    end)
+end
+
+local allowedusers = {}
+local userList = {}
+
+local function printUserList()
+    for userId, value in pairs(userList) do
+        print(userId .. ": " .. value)
+    end
+end
+
+
+local function addUser(userId, value)
+    userList[userId] = value  
+end
+
+local function addUseralloweduser(userId, channelId)
+    table.insert(allowedusers, { userId = userId, channelId = channelId })
+end
+
+local function getChannelIdByUserId(userId)
+    for _, user in ipairs(allowedusers) do
+        -- Check if the userId matches
+        if user.userId == userId then
+            return user.channelId  -- Return the associated channelId
+        end
+    end
+    -- If userId is not found
+    return nil  -- Return nil if the userId is not found
+end
+
+
+local function userExists(userId)
+    -- Iterate over the allowedusers table
+    for _, user in ipairs(allowedusers) do
+        -- Check if the userId matches
+        if user.userId == userId then
+            return true
+        end
+    end
+    -- Return false if no match is found
+    return false
+end
+
+
+local function deleteUser(userId)
+    userList[userId] = nil
+end
+
+
+local function removeUser(userId)
+    for index, user in ipairs(allowedusers) do
+        -- Check if the userId matches
+        if user.userId == userId then
+            -- Remove the user from the list
+            table.remove(allowedusers, index)
+            print("User " .. userId .. " has been removed.")
+            return  -- Exit the function after removing the user
+        end
+    end
+    -- If user was not found, print this message
+    print("User " .. userId .. " not found.")
+end
+
+function teleportBasedOnAltNumber(player)
+    local userId = player.UserId
+    local altNumber = getAltNumber(userId)
+    local position = teleportPositions[altNumber] or { -381.01, 35.75, -286 }
+
+    teleport(position)
+end
+
+
+
+
+local currencyPostFixes = {
+    ["k"] = 1000,
+    ["m"] = 1000000,
+    ["b"] = 1000000000,
+}
+local function Track(user,amount,D_user_id,D_guild)
+    print("running track")
+    for postFix, value in pairs(currencyPostFixes) do
+        if string.find(amount, postFix) then
+            local rawNumberString = string.gsub(amount, postFix, "")
+            local amountNumber = tonumber(rawNumberString)
+            amount = amountNumber * value
+            break
+        end
+    end
+
+    if userList[user] then
+        local value = userList[user]
+        amount = amount + value
+        deleteUser(user)
+    end
+
+
+    print("amount",amount)
+
+    repeat task.wait()
+    until game:GetService("Players"):FindFirstChild(user)
+    
+    target = game:GetService("Players"):FindFirstChild(user)
+    
+    print("target found: ", target)
+
+    local oldcurrency = tonumber(target:WaitForChild("DataFolder"):WaitForChild("Currency").Value)
+    local need = oldcurrency + amount 
+    local Channel_ID = getChannelIdByUserId(user)
+    local User_ID = target.UserId
+    print("Channel_ID",Channel_ID)
+    print("User_ID",User_ID)
+    print("oldcurrency",oldcurrency)
+    print("need",need)
+
+    local discord_id = D_user_id or "False"
+    local discord_guild = D_guild or "False"
+    local starter_data = string.format("%s %s %s %s %s %s %s %s", client_id, "ADD-USER", Channel_ID, User_ID, oldcurrency, need, discord_id, discord_guild)
+    ws:Send(starter_data)
+
+    local new 
+    
+    repeat task.wait()
+
+        target = game:GetService("Players"):FindFirstChild(user)
+        if target then
+            new = tonumber(target:WaitForChild("DataFolder"):WaitForChild("Currency").Value)
+            local updated = string.format("%s %s %s %s", client_id, "UPDATE-BALANCE", Channel_ID, new)
+            ws:Send(updated)
+        end
+    
+    until new >= need or target == nil
+    
+       if new >= need  then 
+            print("Target reached there goal: " .. tostring(new))
+            removeUser(user)
+            local updated2 = string.format("%s %s %s %s", client_id, "UPDATE-BALANCE", Channel_ID, new)
+            ws:Send(updated2)
+            local finished_M = string.format("%s %s %s", client_id, "BLOCK", user)
+            ws:Send(finished_M)
+            return true 
+       else
+            print("target left game")
+            local remaining = need - new
+            addUser(user, remaining)
+            return false
+       end 
+    
+end
+
+
+
+local function cashToInt(stringValue)
+	local noDollarSign = string.sub(stringValue, 2, #stringValue)
+	local noComma = string.gsub(noDollarSign, ",", "")
+	local toInt = tonumber(noComma)
+	
+	return toInt
+end
+
+local function countFloorCash()
+    local totalFloorCashAmount = 0
+
+    for _,v in pairs(workspace.Ignored.Drop:GetChildren()) do
+        if v:IsA("Part") then
+            local amount = cashToInt(v.BillboardGui.TextLabel.Text)
+            --TotalFloorCash
+            totalFloorCashAmount += amount
+        end
+    end
+
+    return totalFloorCashAmount
+end
+
+
+local function isOwnerInGame()
+    for _, player in pairs(Players:GetPlayers()) do
+        if player.UserId == ps_owner then
+            return true
+        end
+    end
+    return false
+end
+
+
+
+local function dropCashIfNeeded()
+    while true do
+        task.wait(15.5)
+        if countFloorCash() < 2000000 then
+
+            if isOwnerInGame() then
+                mainEvent:FireServer("DropMoney", 15000)
+            else
+                local ReplicatedStorage = game:GetService("ReplicatedStorage")
+                local chatEvents = ReplicatedStorage:WaitForChild("DefaultChatSystemChatEvents")
+                local CHAT_EVENT = chatEvents:WaitForChild("SayMessageRequest")
+                CHAT_EVENT:FireServer("Waiting for ps owner to be in server.", "All")
+            end
+        end
+    end
+end
+local co1 = coroutine.create(function()
+    dropCashIfNeeded()
+end)
+coroutine.resume(co1)
+
+local function isProtectedPlayer(userId)
+    for _, id in ipairs(getgenv().alts) do
+        if userId == id then
+            return true
+        end
+    end
+    for _, id in ipairs(getgenv().dont_kick) do
+        if userId == id then
+            return true
+        end
+    end
+    return false
+end
+local function onPlayerAdded(player)
+    if localPlayer.UserId == ps_owner then
+        player.CharacterAdded:Wait()
+        repeat
+            task.wait()
+        until player.Character and player.Character:FindFirstChild("FULLY_LOADED_CHAR") ~= nil        
+        print("Player joined:", player.Name)
+        if userList[player.Name] then
+            print("player is in userlist adding them")
+            Track(player.Name,"1k")
+        elseif userExists(player.Name) then
+            print("user exist in list not kicking")
+        else
+            if not isProtectedPlayer(player.UserId) then
+                print(player.Name, " is not in blocking them")
+                wait(20)
+                local finished_L = string.format("%s %s %s", client_id, "BLOCK", player.Name)
+                ws:Send(finished_L)
+            else
+                print("player is a admin not kicking")
+            end
+        end
+    end
+end
+
+Players.PlayerAdded:Connect(onPlayerAdded)
+
+settings().Rendering.QualityLevel = 1
+UserSettings().GameSettings.MasterVolume = 0
+setfpscap(5)
+    
+    -- Assuming PLAYER is defined and is the current player
+    local PLAYER = game.Players.LocalPlayer
+    local CORE_GUI = game.CoreGui
+    local PLAYER_CASH = PLAYER.DataFolder:WaitForChild("Currency")
+    -- Create LowGfxScreenGui (of 'ScreenGui' class) if it doesn't exist
+    if CORE_GUI then
+        local LowGfxScreenGui = CORE_GUI:FindFirstChild("LowGfxScreenGui")
+        if not LowGfxScreenGui then
+            LowGfxScreenGui = Instance.new("ScreenGui")
+            LowGfxScreenGui.Name = "LowGfxScreenGui"
+            LowGfxScreenGui.Enabled = true -- Set to true by default
+            LowGfxScreenGui.IgnoreGuiInset = true
+            LowGfxScreenGui.Parent = CORE_GUI
+
+            -- Create LowGfxBackground Frame
+            local LowGfxBackground = Instance.new("Frame")
+            LowGfxBackground.Name = "LowGfxBackground"
+            LowGfxBackground.BorderColor3 = Color3.new(0.105882, 0.164706, 0.207843)
+            LowGfxBackground.BackgroundColor3 = Color3.new(0, 0, 0) -- Set background color to black
+            LowGfxBackground.Size = UDim2.new(1, 0, 1, 0)
+            LowGfxBackground.Parent = LowGfxScreenGui
+
+            -- Create LGFXUIGradient UIGradient
+            local LGFXUIGradient = Instance.new("UIGradient")
+            LGFXUIGradient.Name = "LGFXUIGradient"
+            LGFXUIGradient.Color = ColorSequence.new{
+                ColorSequenceKeypoint.new(0, Color3.new(0, 0, 0)),
+                ColorSequenceKeypoint.new(1, Color3.new(0.176471, 0.176471, 0.176471))
+            }
+            LGFXUIGradient.Rotation = 290
+            LGFXUIGradient.Parent = LowGfxBackground
+
+            -- Create LowGfxTitle TextLabel
+            local LowGfxTitle = Instance.new("TextLabel")
+            LowGfxTitle.Name = "LowGfxTitle"
+            LowGfxTitle.Text = tostring(PLAYER_CASH.Value) -- Initialize with current cash value
+            LowGfxTitle.TextColor3 = Color3.new(1, 1, 1) -- White text color
+            LowGfxTitle.BackgroundTransparency = 1 -- No background
+            LowGfxTitle.Size = UDim2.new(0.2, 0, 0.1, 0) -- Adjust size as needed
+            LowGfxTitle.Position = UDim2.new(0.4, 0, 0.05, 0) -- Centered horizontally, adjust vertically as needed
+            LowGfxTitle.Font = Enum.Font.SourceSans
+            LowGfxTitle.TextScaled = true
+            LowGfxTitle.Parent = LowGfxBackground
+
+            -- Connect the function to update the cash text when it changes
+            PLAYER_CASH.Changed:Connect(function()
+                if LowGfxTitle then
+                    LowGfxTitle.Text = tostring(PLAYER_CASH.Value)
+                else
+                    print("LowGfxTitle not found")
+                end
+            end)
+
+            -- Create Username TextLabel
+            local UsernameLabel = Instance.new("TextLabel")
+            UsernameLabel.Name = "UsernameLabel"
+            UsernameLabel.Text = PLAYER.Name -- Set to player's username
+            UsernameLabel.TextColor3 = Color3.new(1, 1, 1) -- White text color
+            UsernameLabel.BackgroundTransparency = 1 -- No background
+            UsernameLabel.Size = UDim2.new(0.3, 0, 0.05, 0) -- Adjust size as needed
+            UsernameLabel.Position = UDim2.new(0.35, 0, 0.12, 0) -- Centered horizontally below the cash label
+            UsernameLabel.Font = Enum.Font.SourceSans
+            UsernameLabel.TextScaled = true
+            UsernameLabel.Parent = LowGfxBackground
+
+            -- Create ProfilePicture ImageLabel
+            local ProfilePicture = Instance.new("ImageLabel")
+            ProfilePicture.Name = "ProfilePicture"
+            ProfilePicture.Size = UDim2.new(0.1, 0, 0.1, 0) -- Adjust size as needed
+            ProfilePicture.Position = UDim2.new(0.45, 0, 0.01, 0) -- Adjust position as needed
+            ProfilePicture.BackgroundTransparency = 1 -- No background
+            ProfilePicture.Image = "http://www.roblox.com/Thumbs/Avatar.ashx?x=100&y=100&Format=png&userId="..PLAYER.UserId -- Get the player's avatar
+            ProfilePicture.Parent = LowGfxBackground
+        end
+
+        print("LowGfxScreenGui created and enabled")
+    else
+        print("CORE_GUI not found")
+    end
+
+
+
+local GC = getconnections or get_signal_cons
+    if GC then
+        for i,v in pairs(GC(Players.LocalPlayer.Idled)) do
+            if v["Disable"] then
+                v["Disable"](v)
+            elseif v["Disconnect"] then
+                v["Disconnect"](v)
+            end
+        end
+    end
+print("Ran")
+
+
+function ismacro() 
+    return game:GetService("Lighting"):GetAttribute("MacroAllow") or false 
+end 
+
+
+
+
+if localPlayer.UserId ~= ps_owner then
+    if ismacro() == false then
+        wait(30)
+    end
+    teleportBasedOnAltNumber(localPlayer)
+else
+    if ismacro() == false then
+        game:GetService("ReplicatedStorage"):WaitForChild("MainEvent"):FireServer("RoleplayModeChange")
+        wait(2)
+        game:GetService("ReplicatedStorage"):WaitForChild("MainEvent"):FireServer("MacroModeChange")
+    end
+    teleportBasedOnAltNumber(localPlayer)
+end
+
+
+if localPlayer.UserId == ps_owner then
+
+
+    ws:Send(client_id)
+
+    ws.OnMessage:Connect(function(message)
+        print("Message received:", message)
+        local parts = {}
+        
+        for word in string.gmatch(message, "%S+") do
+            table.insert(parts, word)
+        end
+        
+        if parts[1] == "drop" then
+            if #parts > 2 then
+                local money = parts[2]
+                local name = parts[3]
+                local Channel = parts[4]
+                local d_id = parts[5]
+                local g_id = parts[6]
+                
+                local co = coroutine.create(function()
+                    print("Drop command received")
+                    if localPlayer.UserId == ps_owner then
+                        print("Running stuff")
+                        addUseralloweduser(name, Channel)
+                        Track(name, money, d_id, g_id)
+                    end
+                end)
+                coroutine.resume(co)
+            else
+                print("Invalid drop command format")
+            end
+        elseif parts[1] == "kick" then
+            local player = parts[2]
+            local co = coroutine.create(function()
+                print("Running kick player command")
+                Kick(player)
+            end)
+            coroutine.resume(co)
+        elseif parts[1] == "shout" then
+            local startIndex = 2
+            local endIndex = #parts - 1
+            local messageParts = {}
+
+            for i = startIndex, endIndex do
+                table.insert(messageParts, parts[i])
+            end
+            local messageString = table.concat(messageParts, " ")
+            local co = coroutine.create(function()
+                print("Running shout command")
+                shout(messageString)
+            end)
+            coroutine.resume(co)
+        else
+            print("Unknown command")
+        end
+    end)
+end
