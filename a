@@ -1,3 +1,34 @@
+getgenv().alts = { 
+    307262703,
+    7568210893,
+    7568194271,
+    7568193359,
+    7568213407,
+    7568196835,
+    7568214417,
+    7568207725,
+    7568218917,
+    7568216018,
+    7568207821,
+    7568208803,
+    7568222996,
+    7568225453,
+    7568218192,
+    7568219612,
+    7568229073,
+    7568229583,
+    7568219741,
+    7577368369,
+    7577492163,
+    
+}
+getgenv().dont_kick = {
+    39131128,
+    126427956,
+    1362376047,
+    7574473807,
+}
+local ps_owner = 307262703
 local client_id = "config"
 local Players = game:GetService('Players')
 local Terrain = Workspace:FindFirstChild('Terrain')
@@ -352,7 +383,7 @@ end
 local function dropCashIfNeeded()
     while true do
         task.wait(15.5)
-        if countFloorCash() < 2000000 then
+        if countFloorCash() < 10000000 then
 
             if isOwnerInGame() then
                 mainEvent:FireServer("DropMoney", 15000)
